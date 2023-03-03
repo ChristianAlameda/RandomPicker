@@ -88,20 +88,20 @@ class Options:
             if choice2 == 1:
             
                 mixer.init()
-                mixer.music.load(r"C:\\Users\\Christian Alameda\\Documents\\funWithCode\\vs code\\PickingRandomTopic\\moonlight.wav")
+                mixer.music.load(r"moonlight.wav")
                 mixer.music.play()
                 
                 #"C:\Users\Christian Alameda\Documents\funWithCode\vs code\PickingRandomTopic\puppyFolder\puppy2.png"
                 #playsound('moonlight.mp3', False)# false will simply not play the audio
                 #winsound.PlaySound("moonlight", winsound.SND_ASYNC | winsound.SND_ALIAS )
                 
-                parent_dir = (r"C:\\Users\\Christian Alameda\\Documents\\funWithCode\\vs code\\PickingRandomTopic\\puppyFolder")
+                parent_dir = (r"puppyFolder")
                 for subdir, dirs, files in os.walk(parent_dir):
                     for file in files:
                         
                         # show needs an "Image.open(file)" in front of it
                         
-                        Image.open("C:\\Users\\Christian Alameda\\Documents\\funWithCode\\vs code\\PickingRandomTopic\\puppyFolder\\"+file).show() # file in this contxt is a string
+                        Image.open("puppyFolder\\"+file).show() # file in this contxt is a string
                 
             
             
