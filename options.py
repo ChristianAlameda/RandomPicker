@@ -8,6 +8,7 @@ from playsound import playsound
 from pygame import mixer
 import os
 from entry import Entry
+import playsound
 
 
 
