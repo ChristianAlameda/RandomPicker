@@ -1,4 +1,4 @@
-# Project Name
+# RandomPicker
 
 This project has a list of 100 essay ideas to choose from and will randomly choose for you with some voice to tell you 
 The topics you have chosen already are kept so that you don't have to remember what you have done before
@@ -26,7 +26,20 @@ Provide instructions on how to install and set up your project. Include any depe
 
 ```bash
 # Example installation steps
-git clone https://github.com/ChristianAlameda/RandomPickeryourproject.git
+git clone https://github.com/ChristianAlameda/RandomPicker.git
 cd RandomPicker
 pip install -r requirements.txt
 python main.py
+```
+
+## Usage
+
+For those that are too lazy like myself to pick an essay prompt to right upon. Streamline it to this script and just rely on yourself to write the topic presented. When tired look at some puppies. 
+
+## Contributing
+
+yours truly, ChristianAlameda
+
+## License
+
+@ChristianAlameda
