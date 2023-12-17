@@ -22,7 +22,7 @@ List the key features of your project.
 
 ## Installation
 
-Provide instructions on how to install and set up your project. Include any dependencies that need to be installed.
+Provide instructions on how to install and set up your project. Include any dependencies that need to be installed. If mac please do python3 instead of python
 
 ```bash
 # Example installation steps
