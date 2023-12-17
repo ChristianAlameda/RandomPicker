@@ -30,4 +30,3 @@ git clone https://github.com/ChristianAlameda/RandomPickeryourproject.git
 cd RandomPicker
 pip install -r requirements.txt
 python main.py
-python3 main.py
