@@ -1,13 +1,8 @@
 from options import Options
 def main():
-    me = Options()
-    me.create_inventory("q.csv")
-    me.create_inventory1("old.csv")
-    me.create_inventory2("quotes.csv")
-    #me.print_list()
-    me.choice('q.csv','old.csv','q1.csv')
-    #me.print_list()
-    #print("Hello")
-    #me.spectacular("q.csv", "old.csv", "q1.csv")
-    
+    options = Options()
+    options.create_inventory("original.csv")
+    options.create_inventory1("old.csv")
+    options.create_inventory2("quotes.csv")
+    options.choice('original.csv','old.csv','notUsed.csv')
 main()

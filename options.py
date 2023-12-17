@@ -9,46 +9,64 @@ from pygame import mixer
 import os
 from entry import Entry
 import playsound
-
-
-
+import threading
 
 class Options:
     
     def __init__(self):
-        self.list = []
+        self.original = []
         self.current = []
         self.used = []
         self.quotes_list = []
         self.pick = ''
-        
+    
+    #getting data from original.csv and using lines
+    def create_inventory(self, original):
+        with open(original,"r") as csvfile:
+            csvreader = csv.reader(csvfile)
+            for line in csvreader:
+                self.original.append(line)
+    
+    #making it for removed to get into old
+    def create_inventory1(self,old):
+        with open(old, "r") as csvfile:
+            csvreader = csv.reader(csvfile)
+            for line in csvreader:
+                self.used.append(line)
+    
+    # reading in data from "quotes.csv" in order to use them
+    def create_inventory2(self,quotes):
+        with open(quotes, "r") as csvfile:
+            csvreader = csv.reader(csvfile)
+            for line in csvreader:
+                entry = Entry()
+                entry.set_quotes(line[0]) 
+                entry.set_author(line[1])
+                entry.set_location(line[2]) 
+                self.quotes_list.append(entry)
+                
     def print_list(self):
-        
+        """_summary_: 4 options
+            1: exit
+            2: print finished essay prompts
+            3: print unfinished essay prompts
+            4: puppy bombardment
+        """
         # if user wants to print the list of all the availiable essay prompts 
         # or print the essay prompts he has already done he can press
         # 1 for essay prompt and 2 for finished essay prompts 3 for dog attack
         
         print("Please enter [0] for exiting Program\nPlease enter [1] for unfinished essay prompts\nPlease enter [2] for finished essay prompts\nPlease enter [3] for a puppy bonbardment")
-        print("__________________________________________________________________________________________________________________________")
-        print("__________________________________________________________________________________________________________________________")
-        
-        answer = int(input(": "))
-        #just for now answer will be 3 to quickly error check
-        
-        if answer == 0:
-            exit()
+        answer = int(input("Enter Here: "))
+
+        if answer == 0: exit()
         if answer == 1:
-            
-            for i in self.list:
+            for i in self.original:
                 print(i)
         if answer == 2:
-            
-            for i in    self.used:
+            for i in self.used:
                 print(i)
         if answer == 3:
-            
-            
-            
             ''' Quotes '''
             ''' We have to have quotes'''
             
@@ -66,19 +84,14 @@ class Options:
                 
                 # initializing the number of charachters in a quote
                 
-                
                 # if it is greater than 30 I want to add a newline after 30 charachters
                 # divide the quote into segments of 30 or less charachters when coming to the end
-                self.list_num = []
-                self.list30 = []
+                self.original_num = []
+                self.original30 = []
                 self.line = []
                 for char in quote:
-                    self.list_num.append(char)
-                #print(self.list_num)
-                
-                
-                #3 lines instead of 82 lines
-                
+                    self.original_num.append(char)
+                    
                 for i in range(0, len(quote), 60):
                     print(quote[i:i+60])
                 #time.sleep(3)
@@ -89,31 +102,41 @@ class Options:
             if choice2 == 0:
                 exit()
             if choice2 == 1:
-                #C:\\Users\\Christian Alameda\\Documents\\funWithCode\\vs code\\PickingRandomTopic\\
-               # mixer.init()
-                #mixer.music.load(r"moonlight.mp3")
-                #mixer.music.play()
-                
-                while(playsound.playsound('moonlight.mp3')):     
-                
-                    #"C:\Users\Christian Alameda\Documents\funWithCode\vs code\PickingRandomTopic\puppyFolder\puppy2.png"
-                    #playsound('moonlight.mp3', False)# false will simply not play the audio
-                    #winsound.PlaySound("moonlight", winsound.SND_ASYNC | winsound.SND_ALIAS )
-                    
-                    #C:\\Users\\Christian Alameda\\Documents\\funWithCode\\vs code\\PickingRandomTopic\\
-                    parent_dir = (r"puppyFolder")
-                    for subdir, dirs, files in os.walk(parent_dir):
-                        for file in files:
-                            
-                            # show needs an "Image.open(file)" in front of it
-                            
-                            Image.open("puppyFolder\\"+file).show() # file in this contxt is a string
+                parent_dir = r"puppyFolder"
+                mp3_file = 'moonlight.mp3'
+                image_files = [os.path.join(parent_dir, file) for file in os.listdir(parent_dir) if file.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+
+                music_thread = threading.Thread(target=self.play_music, args=(mp3_file,))
+                images_thread = threading.Thread(target=self.display_images, args=(image_files,))
+
+                music_thread.start()
+                images_thread.start()
+
+                music_thread.join()
+                images_thread.join()
                 
         else:
             print('You have entered a wrong number, please try again')
             self.print_list()  
+    
+    def play_music(self, mp3_file):
+        playsound.playsound(mp3_file)
+
+    def display_images(self, image_files):
+        for image_file in image_files:
+            Image.open(image_file).show()
             
-    def choice(self, q, old, q1):
+    def choice(self, original, old, notUsed):
+        """_summary_: Give the user 
+            option 1: to print_which will give 3 options to show old or unused topics or to have a puppy show
+            option 2: make the choice for a topic
+            option 3: user made a mistake
+
+        Args:
+            orignal (csv file): orignal topics
+            old (csv file): old topics that have been selected already
+            transfer (csv file): a transfer file between original to old, meant to not tarnish orignal
+        """
         choice = int(input("Enter a number for what you want\n[0] - exit\n[1] - printed List\n[2] - Choice Selector\nEnter Here:"))
         
         if choice == 0:
@@ -121,74 +144,42 @@ class Options:
         elif choice == 1:
             self.print_list()
         elif choice == 2:
-            self.spectacular(q, old, q1)
+            self.spectacular(original, old, notUsed)
         else:
             print('You have chosen a wrong choice selection; Correct selections: [0,1,2]')
-            self.choice(q,old,q1)
-                
-              
-            
-              
+            self.choice(original,old,notUsed)
+                    
+    # picks a random item in our list
     def pick_random(self):
+        """_summary_: grabs a random item from the csv that has not been used yet
+
+        Returns:
+            str: just the unused item that was selected
+        """
         
-        # picks a random item in our list
-        
-        pick = random.choice(self.list) 
+        pick = random.choice(self.original) 
         return pick
-    
-    #getting data from q and using lines
-    
-    def create_inventory(self, q):
-        with open("q.csv","r") as csvfile:
-            csvreader = csv.reader(csvfile)
-            for line in csvreader:
-                self.list.append(line)
-    
-    #making it for removed to get into old
-    
-    def create_inventory1(self,old):
-        with open("old.csv", "r") as csvfile:
-            csvreader = csv.reader(csvfile)
-            for line in csvreader:
-                self.used.append(line)
-    
-    # reading in data from "quotes.csv" in order to use them
-    
-    def create_inventory2(self,quotes):
-        with open(quotes, "r") as csvfile:
-            csvreader = csv.reader(csvfile)
-            
-            for line in csvreader:
                 
-                entry = Entry()
-                entry.set_quotes(line[0]) 
-                entry.set_author(line[1])
-                entry.set_location(line[2]) 
-                self.quotes_list.append(entry)
-                
-    
+    def spectacular(self, original, old, notUsed):
+        """_summary_: 3 parts to this function: 
+            1: make a choice from random and present the user what choice has been made
+            2: from the choice we want to remove the selected choice from orginal list
+            3: we add the item chosen to old.csv and and we recreate notUsed.csv to update it
 
-    
-    
-    
-    
-                
-
-    
-                
-                
-    def spectacular(self, q, old, q1):
-        
+        Args:
+            orignal (csv): original csv with the 100 items
+            old (csv): used items 
+            notUsed (csv): transfer csv file
+        """
+        '''
+        1
+        ===================================================================
+        '''
         # first part will  do the picking
-        
         self.pick = self.pick_random()
         
         self.beep1()
-        
-        #in seconds
-        
-        time.sleep(3)
-        
+        time.sleep(3) # in seconds
         
         print("Your choice for today is: ",self.pick,", Woooooooooooooooooo")
         
@@ -198,56 +189,51 @@ class Options:
         engine.say("Woooooooooooooooooo")
         engine.runAndWait()
         
-        
         self.beep2()
         '''
+        2
         ===================================================================
         '''
         
-        #second part will do the removing of the picked item
-        # and redoing the q.csv as to remove that item from it
+        # second part will do the removing of the picked item
+        # and redoing the original.csv as to remove that item from it
         # only able to hold it for when the program is running
         
         self.current.append(self.pick)
         
-        for i in self.list:
+        for i in self.original:
             if i in self.used:# changed to used
-                self.list.remove(i)
+                self.original.remove(i)
                 
             elif i == self.pick:
-                self.list.remove(self.pick)
+                self.original.remove(self.pick)
                 
         '''
+        3
         =======================================================================
         '''
-        #third part with be adding the removed prompt into a new place
-        #to live
+        # third part with be adding the removed prompt into a new place
+        # to live
         
         current = self.current
         
         # appending current items in list to the function in order to 
         # keep track of which essays have been finished
         
-        with open(old,"a") as fd: 
+        with open(old,"a") as file: 
             for i in current:
                 for j in i:
-                    fd.write(j + '\n')
+                    file.write(j + '\n')
         
         # we want to recreate the file
         # as to not have it in our new list
         
-        with open(q, 'r') as inp, open(q1, 'w') as out:
+        with open(original, 'r') as inp, open(notUsed, 'w') as out:
             writer = csv.writer(out)
             for row in csv.reader(inp):
                 if row not in self.used: #changed to used
                     writer.writerow(row)
-            
-        '''
-        =======================================================================
-        '''
 
-        
-        
     def beep1(self):
         
         # gets to 1000
